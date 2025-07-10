@@ -13,6 +13,7 @@ class URLRequest(BaseModel):
 
 def scrape_visible_main_text(url: str) -> str:
     options = Options()
+    options.binary_location = "/usr/bin/google-chrome"
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--log-level=3")
