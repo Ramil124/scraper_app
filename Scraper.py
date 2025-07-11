@@ -4,6 +4,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import time
 
 app = FastAPI()
@@ -13,7 +16,6 @@ class URLRequest(BaseModel):
 
 def scrape_visible_main_text(url: str) -> str:
     options = Options()
-    options.binary_location = "/usr/bin/google-chrome"
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--log-level=3")
@@ -26,6 +28,11 @@ def scrape_visible_main_text(url: str) -> str:
         driver.get(url)
         time.sleep(5)  # wait for rendering
 
+
+        # Wait until at least the main content or table appears
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
         # Scroll to bottom to trigger lazy content
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(2)
